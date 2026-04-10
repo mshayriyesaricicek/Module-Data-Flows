@@ -8,20 +8,16 @@ const film = {
 };
 console.log(film.title, "<---- film.title");
 
-//Goal: Render the title of the  film card in the user interface
+//Goal: Refactor this logic to use a film card template instead`
 
-// create a film card (section)
-// create a title element
-// append title to that film card
-// append film card to the dom
+const filmCard = document
+  .getElementById("film-card-template")
+  .content.cloneNode(true);
 
-const filmCard = document.createElement("section");
+console.log(filmCard);
 
-const title = document.createElement("h1");
-const director = document.createElement("p");
-director.textContent = film.director;
-title.textContent = film.title;
-filmCard.appendChild(title);
-filmCard.appendChild(director);
-
+filmCard.querySelector("h3").textContent = film.title;
+filmCard.querySelector("p").textContent = film.director;
 document.body.appendChild(filmCard);
+
+
