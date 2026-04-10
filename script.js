@@ -18,7 +18,7 @@ const films = [
 
 //Goal: How to use film card component with an array
 
-//Goal: How can we reuse functionality?
+//Goal: Build an array of film card and then append to the DOM
 
 function createFilmCard(film) {
   // How we go through the array of films and create a card for each element
@@ -33,8 +33,14 @@ function createFilmCard(film) {
 
 // How we go through the array of films and create a card for each element
 
-for (const film of films) {
-  const card = createFilmCard(film);
-  console.log(card);
-  document.body.appendChild(card);
-}
+const filmCards = films.map(createFilmCard);
+
+document.body.append(...filmCards);
+
+//console.log(filmCards);
+
+//for (const film of films) {
+//  const card = createFilmCard(film);
+//  console.log(card);
+//document.body.appendChild(card);
+//}
