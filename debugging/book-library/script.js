@@ -1,5 +1,38 @@
 let myLibrary = JSON.parse(localStorage.getItem("myLibrary")) || [];
 
+function isValidAuthor(text) {
+  for (let char of text) {
+    const isLetter =
+      (char >= "a" && char <= "z") ||
+      (char >= "A" && char <= "Z");
+
+    const isAllowedSymbol =  ". ',&-".includes(char); 
+
+    if (!isLetter && !isAllowedSymbol) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function isValidTitle(text) {
+  for (let char of text) {
+    const isLetter =
+      (char >= "a" && char <= "z") ||
+      (char >= "A" && char <= "Z");
+
+    const isNumber = (char >= "0" && char <= "9");
+
+    const isAllowedSymbol = ' \'.,!?&:-()"'.includes(char); 
+
+    if (!isLetter && !isNumber && !isAllowedSymbol) {
+      return false;
+    }
+  }
+  return true;
+}
+// 2. then your other functions (populateStorage, render, etc)
+
 function saveLibrary() {
   localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
 }
@@ -7,52 +40,39 @@ function saveLibrary() {
 document.getElementById("bookForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
-const title = document.getElementById("title").value;
-const author = document.getElementById("author").value;
-const pages = document.getElementById("pages").value;
-const read = document.getElementById("check").checked;
+  const title = document.getElementById("title").value;
+  const author = document.getElementById("author").value;
+  const pages = document.getElementById("pages").value;
+  const read = document.getElementById("check").checked;
 
- if (!title || !author || !pages) {
-    alert("Please fill all fields!");
+  if (!isValidAuthor(author)) {
+    alert("Invalid author name");
     return;
   }
 
-populateStorage(title, author, pages, read);
+  if (!isValidTitle(title)) {
+    alert("Invalid book title");
+    return;
+  }
 
-render();
+  populateStorage(title, author, pages, read);
+
+  render();
 
   this.reset();
 
-  $('#demo').collapse('hide');
+  $("#demo").collapse("hide");
+
 });
 
-function addBookToTable(title, author, pages, read) {
-  const table = document.getElementById("display").getElementsByTagName("tbody")[0];
-
-  const row = table.insertRow();
-
-  row.insertCell(0).textContent = title;
-  row.insertCell(1).textContent = author;
-  row.insertCell(2).textContent = pages;
-  row.insertCell(3).textContent = read ? "Yes" : "No";
-}
-
-function populateStorage(title, author, pages, check) {
- let newBook = new Book(title, author, pages, check);
-    myLibrary.push(newBook);
-
-    saveLibrary();
-  }
-      
 //check the right input from forms and if its ok -> add the new book (object in array)
 //via Book function and start render function
-  function populateStorage(title, author, pages, check) {
-    let newBook = new Book(title, author, pages, check);
 
+function populateStorage(title, author, pages, check) {
+  let newBook = new Book(title, author, pages, check);
   myLibrary.push(newBook);
-  saveLibrary(); 
-  };
-  
+  saveLibrary();
+}
 
 function Book(title, author, pages, check) {
   this.title = title;
@@ -62,16 +82,9 @@ function Book(title, author, pages, check) {
 }
 
 function render() {
-   console.log("RENDER CALLED");
-  
-   const table = document.querySelector("#display tbody");
-    table.innerHTML = "";
+  const table = document.querySelector("#display tbody");
+  table.innerHTML = "";
 
-  //let rowsNumber = table.rows.length;
-  //delete old table
-  //for (let n = rowsNumber - 1; n > 0; n--) {
-  //  table.deleteRow(n);
-  //}
   //insert updated row and cells
   let length = myLibrary.length;
   for (let i = 0; i < length; i++) {
@@ -88,18 +101,13 @@ function render() {
     //add and wait for action for read/unread button
     let changeBut = document.createElement("button");
 
-    //changeBut.id = i;
-
     changeBut.className = myLibrary[i].check
-    ? "btn btn-success"
-    : "btn btn-secondary";
+      ? "btn btn-success"
+      : "btn btn-secondary";
 
     changeBut.innerText = myLibrary[i].check ? "Read" : "Unread";
 
     wasReadCell.appendChild(changeBut);
-
-    //let readStatus = myLibrary[i].check ? "Yes" :  "No";
-    //}
 
     changeBut.addEventListener("click", function () {
       myLibrary[i].check = !myLibrary[i].check;
@@ -110,30 +118,33 @@ function render() {
     //add delete button to every row and render again
     let delBut = document.createElement("button");
 
-    //delBut.id = i + 5;
-    
-
     delBut.className = "btn btn-danger btn-sm";
     delBut.innerHTML = "Delete";
 
     deleteCell.appendChild(delBut);
 
     delBut.addEventListener("click", function () {
-      //alert(`You've deleted title: ${myLibrary[i].title}`);
       myLibrary.splice(i, 1);
 
       saveLibrary();
 
       render();
     });
- }
-} 
- window.addEventListener("load", function () {
-  if (myLibrary.length === 0) {
-    populateStorage("Robison Crusoe", "Daniel Defoe", "252", true);
-    populateStorage( "The Old Man and the Sea", "Ernest Hemingway", "127", false);
-    saveLibrary();
   }
+}
 
+function loadDefaultBooks() {
+  if (myLibrary.length === 0) {
+    populateStorage("Robinson Crusoe", "Daniel Defoe", "252", true);
+    populateStorage(
+      "The Old Man and the Sea",
+      "Ernest Hemingway",
+      "127",
+      false
+    );
+  }
+}
+window.addEventListener("load", function () {
+  loadDefaultBooks();
   render();
- });
+});
