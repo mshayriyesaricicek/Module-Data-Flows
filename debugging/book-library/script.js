@@ -3,10 +3,9 @@ let myLibrary = JSON.parse(localStorage.getItem("myLibrary")) || [];
 function isValidAuthor(text) {
   for (let char of text) {
     const isLetter =
-      (char >= "a" && char <= "z") ||
-      (char >= "A" && char <= "Z");
+      (char >= "a" && char <= "z") || (char >= "A" && char <= "Z");
 
-    const isAllowedSymbol =  ". ',&-".includes(char); 
+    const isAllowedSymbol = ". ',&-".includes(char);
 
     if (!isLetter && !isAllowedSymbol) {
       return false;
@@ -18,12 +17,11 @@ function isValidAuthor(text) {
 function isValidTitle(text) {
   for (let char of text) {
     const isLetter =
-      (char >= "a" && char <= "z") ||
-      (char >= "A" && char <= "Z");
+      (char >= "a" && char <= "z") || (char >= "A" && char <= "Z");
 
-    const isNumber = (char >= "0" && char <= "9");
+    const isNumber = char >= "0" && char <= "9";
 
-    const isAllowedSymbol = ' \'.,!?&:-()"'.includes(char); 
+    const isAllowedSymbol = " '.,!?&:-()\"".includes(char);
 
     if (!isLetter && !isNumber && !isAllowedSymbol) {
       return false;
@@ -62,7 +60,6 @@ document.getElementById("bookForm").addEventListener("submit", function (e) {
   this.reset();
 
   $("#demo").collapse("hide");
-
 });
 
 //check the right input from forms and if its ok -> add the new book (object in array)
