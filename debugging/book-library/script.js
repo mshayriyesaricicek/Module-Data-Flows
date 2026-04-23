@@ -80,7 +80,7 @@ function populateStorage(title, author, pages, check) {
 function Book(title, author, pages, check) {
   this.title = title;
   this.author = author;
-  this.pages = pages;
+  this.pages = Number(pages);
   this.check = check;
 }
 
@@ -89,31 +89,28 @@ function render() {
   tableBody.innerHTML = "";
 
   //insert updated row and cells
-  let length = myLibrary.length;
-  for (let i = 0; i < length; i++) {
+  myLibrary.forEach((book, i) => {
     let row = tableBody.insertRow();
     let titleCell = row.insertCell(0);
     let authorCell = row.insertCell(1);
     let pagesCell = row.insertCell(2);
     let wasReadCell = row.insertCell(3);
     let deleteCell = row.insertCell(4);
-    titleCell.innerText = myLibrary[i].title;
-    authorCell.innerText = myLibrary[i].author;
-    pagesCell.innerText = myLibrary[i].pages;
+    titleCell.innerText = book.title;
+    authorCell.innerText = book.author;
+    pagesCell.innerText = book.pages;
 
     //add and wait for action for read/unread button
     let changeBut = document.createElement("button");
 
-    changeBut.className = myLibrary[i].check
-      ? "btn btn-success"
-      : "btn btn-secondary";
+    changeBut.className = book.check ? "btn btn-success" : "btn btn-secondary";
 
-    changeBut.innerText = myLibrary[i].check ? "Read" : "Unread";
+    changeBut.innerText = book.check ? "Read" : "Unread";
 
     wasReadCell.appendChild(changeBut);
 
     changeBut.addEventListener("click", function () {
-      myLibrary[i].check = !myLibrary[i].check;
+      book.check = !book.check;
       saveLibrary();
       render();
     });
@@ -127,14 +124,13 @@ function render() {
     deleteCell.appendChild(delBut);
 
     delBut.addEventListener("click", function () {
-      alert(`You've deleted title: ${myLibrary[i].title}`);
-      myLibrary.splice(i, 1);
-
+      const deletedTitle = book.title;
+      myLibrary.splice(myLibrary.indexOf(book), 1);
       saveLibrary();
-
       render();
+      alert(`You've deleted title: ${deletedTitle}`);
     });
-  }
+  });
 }
 
 function loadDefaultBooks() {
@@ -149,8 +145,13 @@ window.onload = () => {
 
   const saved = localStorage.getItem("myLibrary");
 
-  if (saved && saved !== "[]") {
-    myLibrary.push(...JSON.parse(saved));
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      myLibrary.push(...parsed);
+    } else {
+      loadDefaultBooks();
+    }
   } else {
     loadDefaultBooks();
   }
